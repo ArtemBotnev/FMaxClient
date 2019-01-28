@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:flutter/services.dart';
+import 'package:flutter_nfc_reader/flutter_nfc_reader.dart';
 
 class MainView extends StatefulWidget {
 
@@ -6,10 +10,36 @@ class MainView extends StatefulWidget {
   State<StatefulWidget> createState() => MainViewState();
 }
 
-class MainViewState extends State<MainView> {
+class MainViewState extends State<MainView> with WidgetsBindingObserver {
 
-  String _nfcId = 'body';
-  String _message = 'bottom';
+  String _nfcId = 'nfc id';
+  String _message = 'message';
+
+  NfcData _nfcData;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    startNFC();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      if (state == AppLifecycleState.paused) {
+        stopNFC();
+      } else if (state == AppLifecycleState.resumed) {
+        startNFC();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,4 +80,48 @@ class MainViewState extends State<MainView> {
     _message = message;
   }
 
+  Future<void> startNFC() async {
+    NfcData response;
+
+    setState(() {
+      _nfcData = NfcData();
+      _nfcData.status = NFCStatus.reading;
+    });
+
+    String message = 'Nfc reading failed';
+
+    try {
+      response = await FlutterNfcReader.read;
+      message = 'Nfc was read successfully';
+    } on PlatformException {
+      debugPrint('NFC: Scan stopped exception');
+    }
+    setState(() {
+      _nfcData = response;
+      updateUi(_nfcData.id, message);
+    });
+  }
+
+  Future<void> stopNFC() async {
+    NfcData response;
+
+    try {
+      response = await FlutterNfcReader.stop;
+    } on PlatformException {
+      debugPrint('NFC: Stop scan exception');
+      response = NfcData(
+        id: '',
+        content: '',
+        error: 'NFC scan stop exception',
+        statusMapper: '',
+      );
+      response.status = NFCStatus.error;
+    }
+
+    setState(() {
+      _nfcData = response;
+    });
+  }
+
 }
+
