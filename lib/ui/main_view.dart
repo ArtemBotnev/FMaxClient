@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc_reader/flutter_nfc_reader.dart';
 
+import 'package:f_max_client/network/api_service.dart';
+
 class MainView extends StatefulWidget {
 
   @override
@@ -17,11 +19,13 @@ class MainViewState extends State<MainView> with WidgetsBindingObserver {
 
   NfcData _nfcData;
 
+  Api _api = Api.get();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    startNFC();
+    _startNFC();
   }
 
   @override
@@ -34,9 +38,9 @@ class MainViewState extends State<MainView> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
       if (state == AppLifecycleState.paused) {
-        stopNFC();
+        _stopNFC();
       } else if (state == AppLifecycleState.resumed) {
-        startNFC();
+        _startNFC();
       }
     });
   }
@@ -47,6 +51,14 @@ class MainViewState extends State<MainView> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
         title: Text('Flutter Maximo Client'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.file_download),
+            onPressed: () {
+              _getInfo();
+            },
+          )
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -75,12 +87,12 @@ class MainViewState extends State<MainView> with WidgetsBindingObserver {
     );
   }
 
-  void updateUi(String nfcId, String message) {
+  void _updateUi(String nfcId, String message) {
     _nfcId = nfcId;
     _message = message;
   }
 
-  Future<void> startNFC() async {
+  Future<void> _startNFC() async {
     NfcData response;
 
     setState(() {
@@ -98,11 +110,11 @@ class MainViewState extends State<MainView> with WidgetsBindingObserver {
     }
     setState(() {
       _nfcData = response;
-      updateUi(_nfcData.id, message);
+      _updateUi(_nfcData.id, message);
     });
   }
 
-  Future<void> stopNFC() async {
+  Future<void> _stopNFC() async {
     NfcData response;
 
     try {
@@ -122,6 +134,17 @@ class MainViewState extends State<MainView> with WidgetsBindingObserver {
       _nfcData = response;
     });
   }
+
+  void _getInfo() {
+    var futureInfo = _api.info(
+      1,
+      'description,worktype,wonum,targstartdate,targcompdate',
+      'worktype in ["ФНА","ФМА"] and status in ["СФОРМИРОВАНО"] and siteid="ГК"'
+    );
+    
+    futureInfo.then((info) => print(info.member[0].href))
+      .catchError((e) => print(e));
+  }  
 
 }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:f_max_client/main_view.dart';
+import 'package:f_max_client/ui/main_view.dart';
 
 void main() => runApp(FMaxApp());
 
