@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:f_max_client/ui/main_view.dart';
+import 'package:f_max_client/ui/nfc_view.dart';
+import 'package:f_max_client/ui/member_list_view.dart';
 
 void main() => runApp(FMaxApp());
 
@@ -14,7 +15,10 @@ class FMaxApp extends StatelessWidget {
         primaryColor: Colors.amber,
         iconTheme: IconThemeData.fallback()
       ),
-      home: MainView(),
+      home: MemberListView(),
+      routes: <String, WidgetBuilder> {
+        '/nfc': (BuildContext context) => NfcView()
+      },
     );
   }
 }

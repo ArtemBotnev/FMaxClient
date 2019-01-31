@@ -4,22 +4,18 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc_reader/flutter_nfc_reader.dart';
 
-import 'package:f_max_client/network/api_service.dart';
-
-class MainView extends StatefulWidget {
+class NfcView extends StatefulWidget {
 
   @override
-  State<StatefulWidget> createState() => MainViewState();
+  State<StatefulWidget> createState() => NfcViewState();
 }
 
-class MainViewState extends State<MainView> with WidgetsBindingObserver {
+class NfcViewState extends State<NfcView> with WidgetsBindingObserver {
 
   String _nfcId = 'nfc id';
   String _message = 'message';
 
   NfcData _nfcData;
-
-  Api _api = Api.get();
 
   @override
   void initState() {
@@ -52,12 +48,6 @@ class MainViewState extends State<MainView> with WidgetsBindingObserver {
       appBar: AppBar(
         title: Text('Flutter Maximo Client'),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.file_download),
-            onPressed: () {
-              _getInfo();
-            },
-          )
         ],
       ),
       body: Column(
@@ -134,17 +124,6 @@ class MainViewState extends State<MainView> with WidgetsBindingObserver {
       _nfcData = response;
     });
   }
-
-  void _getInfo() {
-    var futureInfo = _api.info(
-      1,
-      'description,worktype,wonum,targstartdate,targcompdate',
-      'worktype in ["ФНА","ФМА"] and status in ["СФОРМИРОВАНО"] and siteid="ГК"'
-    );
-    
-    futureInfo.then((info) => print(info.member[0].href))
-      .catchError((e) => print(e));
-  }  
 
 }
 
