@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:f_max_client/network/api_service.dart';
-
+import 'package:f_max_client/model/entities.dart';
+import 'package:f_max_client/main.dart';
+import 'package:f_max_client/ui/member_detail_view.dart';
 
 class MemberListView extends StatefulWidget {
 
@@ -11,10 +13,20 @@ class MemberListView extends StatefulWidget {
 
 class MemberListViewState extends State<MemberListView> {
 
-  String _hello = 'Hello!';
-  String _message = 'message';
+  List<Member> _members;
 
   Api _api = Api.get();
+
+  @override
+  void initState() {
+    super.initState();
+    _getInfo();
+  }
+
+  @override
+  didPopRoute() {
+    return Future<bool>.value(true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,55 +36,70 @@ class MemberListViewState extends State<MemberListView> {
         title: Text('Flutter Maximo Client'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.file_download),
-            onPressed: () {
-              _getInfo();
-            },
-          ),
-          IconButton(
               icon: Icon(Icons.nfc),
               onPressed: () {
-                Navigator.of(context).pushNamed('/nfc');
+                Navigator.of(context).pushNamed(FMaxApp.NFC_VIEW);
               }
           )
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              child: Text(
-                _hello,
-                style: const TextStyle(color: Colors.black, fontSize: 22.0),
-              ),
-              alignment: Alignment(0.0, 0.0),
-            ),
-            flex: 7,
-          ),
-          Expanded(
-            child: Container(
-              child: Text(
-                _message,
-                style: const TextStyle(color: Colors.blueGrey, fontSize: 20.0),
-              ),
-              alignment: Alignment(0.0, 0.0),
-            ),
-            flex: 3,
-          ),
-        ],
-      ),
+      body: _buildMemberListView()
     );
   }
 
+  Widget _buildMemberListView() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(8.0),
+      itemBuilder: (context, i) {
+        if (i.isOdd) return Divider();
+        final index = i ~/ 2;
+
+        if (_members != null && index < _members.length) {
+          return _buildRow(_members[index]);
+        }
+      }
+    );
+  }
+
+  Widget _buildRow(Member member) {
+    return GestureDetector(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              member.wonum,
+              style: TextStyle(fontSize: 20.0),
+            ),
+            Text(
+              member.description,
+              style: TextStyle(fontSize: 16.0, color: Colors.teal[900]),
+            )
+          ],
+        ),
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MemberDetailView(memberHref: member.href)
+          )
+      )
+    );
+  }
+
+
   void _getInfo() {
     var futureInfo = _api.info(
-        1,
+        '1',
         'description,worktype,wonum,targstartdate,targcompdate',
         'worktype in ["ФНА","ФМА"] and status in ["СФОРМИРОВАНО"] and siteid="ГК"'
     );
 
-    futureInfo.then((info) => print(info.member[0].href))
-        .catchError((e) => print(e));
+    futureInfo.then((info) {
+      print(info.member[0].wonum);
+        setState(() {
+          _members = info.member;
+        }
+      );
+    }).catchError((e) => print(e));
   }
 
 }

@@ -6,6 +6,8 @@ void main() => runApp(FMaxApp());
 
 class FMaxApp extends StatelessWidget {
 
+  static const String NFC_VIEW = '/nfc';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,7 +19,7 @@ class FMaxApp extends StatelessWidget {
       ),
       home: MemberListView(),
       routes: <String, WidgetBuilder> {
-        '/nfc': (BuildContext context) => NfcView()
+        NFC_VIEW: (BuildContext context) => NfcView()
       },
     );
   }

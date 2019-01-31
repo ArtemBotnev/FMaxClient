@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:f_max_client/model/entities.dart';
 
 const BASE_URL = ''; // base url
+const MXD_URL = ''; // mxd url
 const USER_AUTH_HASH = ''; // user BASE64 hash
 
 const CONNECT_TIMEOUT = 10 * 60 * 1000;
@@ -20,7 +21,7 @@ class Api {
   }
 
   Dio dio = Dio(
-      Options(baseUrl: BASE_URL, headers: {
+      BaseOptions(baseUrl: BASE_URL, headers: {
           'Authorization': 'Basic $USER_AUTH_HASH'
         }
       )
@@ -56,11 +57,11 @@ class Api {
     }
   }
 
-  Future<Info> info(int lean, String select, String where) async {
+  Future<Info> info(String lean, String select, String where) async {
     try {
       final Response response = await dio.get(
           '/oslc/os/work_task_mobile',
-          data: { 'lean': lean, 'oslc.select': select, 'oslc.where': where }
+          queryParameters: { 'lean': lean, 'oslc.select': select, 'oslc.where': where }
       );
 
       print(response.statusCode);
@@ -76,11 +77,10 @@ class Api {
   }
 
   void getRequest(String fullUrl) async {
-    final Dio d = Dio(Options(baseUrl: BASE_URL, headers: {
-      'Authorization': 'Basic $USER_AUTH_HASH'
-      },
-      connectTimeout: CONNECT_TIMEOUT,
-      receiveTimeout: RECEIVE_TIMEOUT)
+    final Dio d = Dio(BaseOptions(baseUrl: BASE_URL, headers: {
+          'Authorization': 'Basic $USER_AUTH_HASH'
+        }
+      )
     );
 
     try {
@@ -91,6 +91,25 @@ class Api {
 
     } catch(ex) {
       print(ex);
+    }
+  }
+
+  Future<MemberDetail> getCheckLists(String href) async {
+    final Dio d = Dio(BaseOptions(
+        connectTimeout: CONNECT_TIMEOUT,
+        receiveTimeout: RECEIVE_TIMEOUT)
+    );
+
+    try {
+      final Response response = await d.get('$MXD_URL$href');
+      print('check lists downloal code: ${response.statusCode}');
+
+      return MemberDetail.fromJson(response.data);
+
+    } catch(ex) {
+      print(ex);
+
+      return null;
     }
   }
 
