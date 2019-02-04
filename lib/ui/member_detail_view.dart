@@ -81,7 +81,7 @@ class MemberDetailViewState extends State<MemberDetailView> {
           style: TextStyle(fontSize: 16.0, color: Colors.teal[900]),
         ),
         Text(
-          checkLists.goal,
+          checkLists.fixed ? 'fixed' : 'not fixed',
           style: TextStyle(fontSize: 16.0, color: Colors.deepPurple),
         )
       ],

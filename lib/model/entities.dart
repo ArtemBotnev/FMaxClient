@@ -208,7 +208,6 @@ class CheckLists {
   String goal;
   bool fixed;
   List<CheckLists> checkLists;
-  String classid;
   String ansesstorClassId;
   List<String> rsDefectcomment;
   List<String> photoLinks;
@@ -238,7 +237,6 @@ class CheckLists {
         this.goal,
         this.fixed,
         this.checkLists,
-        this.classid,
         this.ansesstorClassId,
         this.rsDefectcomment,
         this.photoLinks,
@@ -273,33 +271,12 @@ class CheckLists {
         checkLists.add(new CheckLists.fromJson(v));
       });
     }
-    classid = json['classid'];
     ansesstorClassId = json['ansesstorClassId'];
-    if (json['rs_defectcomment'] != null) {
-      rsDefectcomment = new List<Object>();
-      json['rs_defectcomment'].forEach((v) {
-        rsDefectcomment.add(v);
-      });
-    }
-    if (json['photoLinks'] != null) {
-      photoLinks = new List<String>();
-      json['photoLinks'].forEach((v) {
-        photoLinks.add(v);
-      });
-    }
-    if (json['photoFileNames'] != null) {
-      photoFileNames = new List<String>();
-      json['photoFileNames'].forEach((v) {
-        photoFileNames.add(v);
-      });
-    }
+    rsDefectcomment = json['rs_defectcomment'].cast<String>();
+    photoLinks = json['photoLinks'].cast<String>();
+    photoFileNames = json['photoFileNames'].cast<String>();
     scanned = json['scanned'];
-    if (json['locations'] != null) {
-      locations = new List<String>();
-      json['locations'].forEach((v) {
-        locations.add(v);
-      });
-    }
+    locations = json['locations'].cast<String>();
     checkedtimems = json['checkedtimems'];
     photoNames = json['photoNames'];
     checklistType = json['checklistType'];
@@ -327,23 +304,12 @@ class CheckLists {
     if (this.checkLists != null) {
       data['checkLists'] = this.checkLists.map((v) => v.toJson()).toList();
     }
-    data['classid'] = this.classid;
     data['ansesstorClassId'] = this.ansesstorClassId;
-    if (this.rsDefectcomment != null) {
-      data['rs_defectcomment'] =
-          this.rsDefectcomment.map((v) => v).toList();
-    }
-    if (this.photoLinks != null) {
-      data['photoLinks'] = this.photoLinks.map((v) => v).toList();
-    }
-    if (this.photoFileNames != null) {
-      data['photoFileNames'] =
-          this.photoFileNames.map((v) => v).toList();
-    }
+    data['rs_defectcomment'] = this.rsDefectcomment;
+    data['photoLinks'] = this.photoLinks;
+    data['photoFileNames'] = this.photoFileNames;
     data['scanned'] = this.scanned;
-    if (this.locations != null) {
-      data['locations'] = this.locations.map((v) => v).toList();
-    }
+    data['locations'] = this.locations;
     data['checkedtimems'] = this.checkedtimems;
     data['photoNames'] = this.photoNames;
     data['checklistType'] = this.checklistType;

@@ -19,7 +19,6 @@ dependencies:
   flutter_nfc_reader:
     git:
       url: git://github.com/matteocrippa/flutter-nfc-reader
-      ref: feature/refactor
 
   dio: 2.0.0
 
