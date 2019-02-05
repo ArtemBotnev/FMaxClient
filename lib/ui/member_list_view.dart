@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:f_max_client/network/api_service.dart';
 import 'package:f_max_client/model/entities.dart';
@@ -99,7 +100,23 @@ class MemberListViewState extends State<MemberListView> {
           _members = info.member;
         }
       );
-    }).catchError((e) => print(e));
+    }).catchError((e) {
+        print(e);
+        _showAssignmentError();
+      }
+    );
+  }
+
+  void _showAssignmentError() {
+    Fluttertoast.showToast(
+        msg: 'No assignment was found',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 2,
+        backgroundColor: Colors.grey,
+        textColor: Colors.black,
+        fontSize: 16.0
+    );
   }
 
 }
